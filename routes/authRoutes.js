@@ -2,14 +2,17 @@ const express = require("express");
 const router = express.Router();
 const passport = require("../config/passport.js");
 const jwt = require("jsonwebtoken");
+const { authenticateJWT } = require("../middleware/authMiddleware");
 const {
   register,
   login,
   oauthLogin,
+  getProfile,
 } = require("../controllers/authControllers");
 
 router.post("/register", register);
 router.post("/login", login);
+router.get("/profile", authenticateJWT, getProfile);
 router.post("/oauth", oauthLogin); // Optional: direct endpoint if you're using token exchange manually
 
 const generateToken = (user) => {

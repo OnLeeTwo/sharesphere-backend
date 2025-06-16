@@ -2,8 +2,18 @@ const articleModel = require("../models/article");
 
 const getArticles = async (req, res) => {
   try {
-    const articles = await articleModel.getAllArticles();
-    res.json(articles);
+    const page = parseInt(req.query.page || "1");
+    const per_page = parseInt(req.query.per_page || "10");
+
+    const { articles, total } = await articleModel.getAllArticles(req.query);
+
+    res.json({
+      articles,
+      total,
+      page,
+      per_page,
+      total_pages: Math.ceil(total / per_page),
+    });
   } catch (err) {
     res
       .status(500)

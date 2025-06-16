@@ -50,7 +50,12 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, tier: user.tier },
+      {
+        id: user.id,
+        tier: user.tier,
+        username: user.username,
+        email: user.email,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -89,7 +94,7 @@ const oauthLogin = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, tier: user.tier },
+      { id: user.id, tier: user.tier, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -103,4 +108,26 @@ const oauthLogin = async (req, res) => {
   }
 };
 
-module.exports = { register, login, oauthLogin };
+const getProfile = async (req, res) => {
+  try {
+    const email = req.user?.email;
+    if (!email) {
+      return res.status(400).json({ message: "User email is required" });
+    }
+
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Exclude sensitive fields like password
+    const { password, ...userData } = user;
+    res.json({ user: userData });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching profile", error: err.message });
+  }
+};
+
+module.exports = { register, login, oauthLogin, getProfile };

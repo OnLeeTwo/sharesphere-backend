@@ -1,10 +1,37 @@
 const db = require("./db");
+const { buildListQuery } = require("../utils/queryBuilder");
 
-const getAllVideos = async () => {
-  const result = await db.query(
-    "SELECT * FROM videos ORDER BY created_at DESC"
-  );
-  return result.rows;
+const getAllVideos = async (filters) => {
+  const { query, values } = buildListQuery({ table: "videos", filters });
+  const result = await db.query(query, values);
+
+  let countQuery = `SELECT COUNT(*) FROM videos`;
+  let countValues = [];
+
+  let conditions = [];
+  let index = 1;
+
+  if (filters.search) {
+    conditions.push(`title ILIKE $${index++}`);
+    countValues.push(`%${filters.search}%`);
+  }
+
+  if (filters.access_tier) {
+    conditions.push(`access_tier = $${index++}`);
+    countValues.push(filters.access_tier);
+  }
+
+  if (conditions.length) {
+    countQuery += ` WHERE ${conditions.join(" AND ")}`;
+  }
+
+  const totalResult = await db.query(countQuery, countValues);
+  const total = parseInt(totalResult.rows[0].count, 10);
+
+  return {
+    videos: result.rows,
+    total,
+  };
 };
 
 const getVideoById = async (id) => {
