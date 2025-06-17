@@ -2,6 +2,7 @@
 
 Base URL:
 <https://sharesphere-backend-o4zw.onrender.com/api>
+Notes: API is in demo mode, you need to cold start the API before using it
 
 ## 🔐 Authentication
 
