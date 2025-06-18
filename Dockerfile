@@ -14,10 +14,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Expose the port your app will run on
-EXPOSE 3000
-
-# Use environment PORT if available (Render sets this)
-ENV PORT=3000
+EXPOSE 8080
 
 # Start the app
 CMD ["node", "app.js"]

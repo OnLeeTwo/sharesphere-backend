@@ -12,6 +12,6 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/articles", require("./routes/articlesRoutes"));
 app.use("/api/videos", require("./routes/videosRoutes"));
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running at http://localhost:${process.env.PORT}`);
+app.listen(process.env.API_PORT, () => {
+  console.log(`Server running at http://localhost:${process.env.API_PORT}`);
 });
